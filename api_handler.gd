@@ -7,11 +7,10 @@ signal response_received(response_text: String)
 ## Emitted when an API request fails
 signal request_failed(error_message: String)
 
-## Direct Ollama API configuration
-@export var api_url: String = "http://127.0.0.1:11434/v1/chat/completions"
-@export var default_model: String = "qwen2.5:3b"
-@export var temperature: float = 0.2
-@export var top_p: float = 0.2
+## RWTH KI:connect API configuration
+@export var api_url: String = "https://chat.kiconnect.nrw/api/v1/chat/completions"
+@export var api_key: String = "6a78dfaa4468c1fc494a0aa8:YpInHRWKWI9BrD1UpFKSzDoj59XxVv/NAxilS4D+mCc="
+@export var default_model: String = "mistralai-mistral-small-4-119b"
 
 @onready var http_request: HTTPRequest = $HTTPRequest if has_node("HTTPRequest") else null
 
@@ -20,10 +19,10 @@ func _ready() -> void:
 		http_request = HTTPRequest.new()
 		add_child(http_request)
 
-## Sends a message to local Ollama API (http://127.0.0.1:11434/v1/chat/completions) and returns model response.
+## Sends a message to the RWTH KI:connect API (https://chat.kiconnect.nrw/api/v1/chat/completions) and returns model response.
 ## Parameters:
 ## - user_message: The text input from the user.
-## - model: Target Ollama model name (defaults to `default_model` = "qwen2.5:3b" if empty).
+## - model: Target model name (defaults to `default_model` = "gpt-oss-120b" if empty).
 ## - system_prompt: Optional system prompt instructions for character persona & restrictions.
 ## - history: Optional array of past conversation messages [{"role": "user"/"assistant", "content": "..."}].
 ## Returns: The text response from the model, or an empty string on error.
@@ -34,7 +33,7 @@ func send_message(user_message: String, model: String = "", system_prompt: Strin
 
 	var selected_model: String = model if not model.strip_edges().is_empty() else default_model
 
-	# Prepare messages array for Ollama API
+	# Prepare messages array
 	var messages: Array[Dictionary] = []
 
 	if not system_prompt.strip_edges().is_empty():
@@ -56,11 +55,12 @@ func send_message(user_message: String, model: String = "", system_prompt: Strin
 		"Content-Type: application/json"
 	]
 
+	if not api_key.strip_edges().is_empty():
+		headers.append("Authorization: Bearer " + api_key)
+
 	var payload: Dictionary = {
 		"model": selected_model,
 		"messages": messages,
-		"temperature": temperature,
-		"top_p": top_p,
 		"stream": false
 	}
 
@@ -68,7 +68,7 @@ func send_message(user_message: String, model: String = "", system_prompt: Strin
 
 	var err: Error = http_request.request(api_url, headers, HTTPClient.METHOD_POST, json_payload)
 	if err != OK:
-		var err_msg: String = "Failed to dispatch request to Ollama (Error code: %d)" % err
+		var err_msg: String = "Failed to dispatch request to RWTH API (Error code: %d)" % err
 		push_error(err_msg)
 		request_failed.emit(err_msg)
 		return ""
@@ -80,7 +80,7 @@ func send_message(user_message: String, model: String = "", system_prompt: Strin
 
 	if result != HTTPRequest.RESULT_SUCCESS or (response_code != 200 and response_code != 201):
 		var body_str: String = body.get_string_from_utf8()
-		var err_msg: String = "Ollama API Error (HTTP %d): %s" % [response_code, body_str]
+		var err_msg: String = "RWTH API Error (HTTP %d): %s" % [response_code, body_str]
 		push_error(err_msg)
 		request_failed.emit(err_msg)
 		return ""
@@ -90,7 +90,7 @@ func send_message(user_message: String, model: String = "", system_prompt: Strin
 	var parse_err: Error = json.parse(response_text)
 
 	if parse_err != OK:
-		var err_msg: String = "Failed to parse JSON response from Ollama"
+		var err_msg: String = "Failed to parse JSON response from RWTH API"
 		push_error(err_msg)
 		request_failed.emit(err_msg)
 		return ""
@@ -105,13 +105,7 @@ func send_message(user_message: String, model: String = "", system_prompt: Strin
 			response_received.emit(reply)
 			return reply
 
-	# 2. Native Ollama Chat Format (/api/chat)
-	if data is Dictionary and data.has("message") and data["message"] is Dictionary:
-		var reply: String = data["message"].get("content", "")
-		response_received.emit(reply)
-		return reply
-
-	var err_msg: String = "Unexpected response structure from Ollama"
+	var err_msg: String = "Unexpected response structure from RWTH API"
 	push_error(err_msg)
 	request_failed.emit(err_msg)
 	return ""

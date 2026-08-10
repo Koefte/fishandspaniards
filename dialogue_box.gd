@@ -4,22 +4,42 @@ extends CanvasLayer
 ## Emitted when the user submits text
 signal text_submitted(text: String)
 
-@onready var title_label: Label = %TitleLabel
+## Emitted when the user selects a different NPC to talk to
+signal npc_changed(npc_name: String)
+
+@onready var npc_select_option: OptionButton = %NPCSelectOption
 @onready var scroll_container: ScrollContainer = %ScrollContainer
 @onready var chat_log: VBoxContainer = %ChatLog
 @onready var line_edit: LineEdit = %LineEdit
 @onready var send_button: Button = %SendButton
 
 var _thinking_label: RichTextLabel = null
+var _available_npcs: Array[String] = []
 
 func _ready() -> void:
 	line_edit.text_submitted.connect(_on_text_submitted)
 	if send_button:
 		send_button.pressed.connect(_on_send_button_pressed)
+	if npc_select_option:
+		npc_select_option.item_selected.connect(_on_npc_item_selected)
 
-func set_title(title: String) -> void:
-	if title_label:
-		title_label.text = title
+## Populates the NPC selection dropdown with available character names
+func setup_npc_selector(npc_names: Array[String], current_active: String = "") -> void:
+	_available_npcs = npc_names
+	if not npc_select_option:
+		return
+
+	npc_select_option.clear()
+	var selected_index: int = 0
+
+	for i in range(_available_npcs.size()):
+		var name_str: String = _available_npcs[i]
+		npc_select_option.add_item(name_str, i)
+		if name_str == current_active:
+			selected_index = i
+
+	if not _available_npcs.is_empty():
+		npc_select_option.select(selected_index)
 
 ## Adds a new message entry into the chat log window
 func add_message(sender_name: String, message_text: String, is_player: bool = false) -> void:
@@ -35,6 +55,21 @@ func add_message(sender_name: String, message_text: String, is_player: bool = fa
 		rtl.text = "[color=#4FC3F7][b]%s:[/b][/color] %s" % [sender_name, message_text]
 	else:
 		rtl.text = "[color=#FFD54F][b]%s:[/b][/color] %s" % [sender_name, message_text]
+
+	chat_log.add_child(rtl)
+	_scroll_to_bottom()
+
+## Adds a system notification into the chat log (e.g. character switch)
+func add_system_info(info_text: String) -> void:
+	remove_thinking_indicator()
+
+	var rtl: RichTextLabel = RichTextLabel.new()
+	rtl.bbcode_enabled = true
+	rtl.fit_content = true
+	rtl.scroll_active = false
+	rtl.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+
+	rtl.text = "[color=#80CBC4][i]--- %s ---[/i][/color]" % info_text
 
 	chat_log.add_child(rtl)
 	_scroll_to_bottom()
@@ -77,6 +112,11 @@ func remove_thinking_indicator() -> void:
 func clear_chat() -> void:
 	for child in chat_log.get_children():
 		child.queue_free()
+
+func _on_npc_item_selected(index: int) -> void:
+	if index >= 0 and index < _available_npcs.size():
+		var chosen_npc: String = _available_npcs[index]
+		npc_changed.emit(chosen_npc)
 
 func _on_send_button_pressed() -> void:
 	_submit_text()
