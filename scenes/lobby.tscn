@@ -1,0 +1,37 @@
+[gd_scene format=3 uid="uid://c15yhliwo2yuc"]
+
+[ext_resource type="Script" uid="uid://bp7hrkdg3twyq" path="res://scripts/networking/Lobby.gd" id="1_o1atq"]
+
+[node name="Lobby" type="Node2D" unique_id=1615365582]
+
+[node name="HostButton" type="Button" parent="." unique_id=664272613]
+offset_left = 243.0
+offset_top = 190.0
+offset_right = 480.0
+offset_bottom = 328.0
+text = "Host Lobby"
+
+[node name="StartButton" type="Button" parent="." unique_id=492759647]
+offset_left = 592.0
+offset_top = 198.0
+offset_right = 829.0
+offset_bottom = 336.0
+text = "Start Game"
+
+[node name="JoinButton" type="Button" parent="." unique_id=1852629652]
+offset_left = 591.0
+offset_top = 380.0
+offset_right = 828.0
+offset_bottom = 518.0
+text = "Join Lobby"
+
+[node name="IdInput" type="LineEdit" parent="." unique_id=1713070512]
+offset_left = 250.0
+offset_top = 383.0
+offset_right = 488.0
+offset_bottom = 504.0
+placeholder_text = "Enter Steam ID"
+alignment = 1
+
+[node name="Lobby" type="Node" parent="." unique_id=1861568170]
+script = ExtResource("1_o1atq")

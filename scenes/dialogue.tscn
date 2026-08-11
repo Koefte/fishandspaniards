@@ -1,0 +1,11 @@
+[gd_scene format=3 uid="uid://hx524tpwxjvn"]
+
+[ext_resource type="Script" uid="uid://b56567y1web0q" path="res://scripts/dialogue/npc_dialogue_handler.gd" id="1_oi3j2"]
+[ext_resource type="PackedScene" uid="uid://b145nj1c12mqp" path="res://scenes/dialogue_box.tscn" id="2_758ep"]
+
+[node name="Main" type="Node2D" unique_id=1429222908]
+script = ExtResource("1_oi3j2")
+
+[node name="DialogueBox" parent="." unique_id=1169112729 instance=ExtResource("2_758ep")]
+
+[node name="HTTPRequest" type="HTTPRequest" parent="." unique_id=2034444360]
