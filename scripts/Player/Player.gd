@@ -57,10 +57,6 @@ func _physics_process(delta: float) -> void:
 		if cmd.get("jump", false):
 			should_jump = true
 
-		if cmd.has("position") and cmd["position"] != Vector3.ZERO:
-			target_pos = cmd["position"]
-		elif cmd.has("pos_x") and (cmd["pos_x"] != 0.0 or cmd["pos_y"] != 0.0 or cmd["pos_z"] != 0.0):
-			target_pos = Vector3(cmd["pos_x"], cmd["pos_y"], cmd["pos_z"])
 
 	if target_pos != Vector3.ZERO:
 		global_position = target_pos
