@@ -43,22 +43,10 @@ shader_parameter/ITER_GEOMETRY = 3
 shader_parameter/ITER_FRAGMENT = 5
 
 [sub_resource type="PlaneMesh" id="PlaneMesh_ye3mu"]
+size = Vector2(100, 100)
 subdivide_width = 10
 subdivide_depth = 10
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_fiuhb"]
-albedo_color = Color(0.42745098, 0, 1, 1)
-
-[node name="OceanScene" type="Node" unique_id=2012960958]
-
-[node name="Camera3D" type="Camera3D" parent="." unique_id=1524942840]
-transform = Transform3D(0.16148402, 0.61952835, -0.76818466, 0.09162288, 0.76562715, 0.6367263, 0.9826129, -0.17320442, 0.06687357, -1.1458256, 0.9999815, 0)
-
-[node name="Ocean" type="MeshInstance3D" parent="." unique_id=1863356145]
+[node name="Ocean" type="MeshInstance3D" unique_id=1863356145]
 material_override = SubResource("ShaderMaterial_ye3mu")
 mesh = SubResource("PlaneMesh_ye3mu")
-
-[node name="CSGBox3D" type="CSGBox3D" parent="." unique_id=190639569]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.06082797, -0.22008967, 0)
-size = Vector3(1, 0.9522705, 1)
-material = SubResource("StandardMaterial3D_fiuhb")

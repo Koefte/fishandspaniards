@@ -46,7 +46,7 @@ uniform vec3 deep_color : source_color = vec3(0.0, 0.341, 0.29);
 uniform vec3 water_absorption : source_color = vec3(0.3, 0.06, 0.02);
 
 // wave parameters
-uniform float sea_height : hint_range(0.0, 5.0) = 0.3;
+uniform float sea_height : hint_range(0.0, 5.0) = 0.1;
 uniform float sea_choppy : hint_range(0.0, 10.0) = 4.0;
 uniform float sea_speed : hint_range(0.0, 5.0) = 1.5;
 uniform float sea_freq : hint_range(0.0, 0.5) = 0.08;
