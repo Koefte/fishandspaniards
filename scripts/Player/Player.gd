@@ -41,12 +41,26 @@ func _physics_process(delta: float) -> void:
 
 	while not input_queue.is_empty():
 		var cmd: Dictionary = input_queue.pop_front()
-		if cmd.has("direction"):
+		if cmd.has("rot_y"):
+			rotation.y = cmd["rot_y"]
+		if cmd.has("forward") or cmd.has("backward") or cmd.has("left") or cmd.has("right"):
+			var input_vec = Vector2.ZERO
+			if cmd.get("left", false): input_vec.x -= 1.0
+			if cmd.get("right", false): input_vec.x += 1.0
+			if cmd.get("forward", false): input_vec.y -= 1.0
+			if cmd.get("backward", false): input_vec.y += 1.0
+			input_vec = input_vec.normalized()
+			current_direction = (Basis(Vector3.UP, rotation.y) * Vector3(input_vec.x, 0, input_vec.y)).normalized()
+		elif cmd.has("direction"):
 			current_direction = cmd["direction"]
-		if cmd.has("jump") and cmd["jump"]:
+
+		if cmd.get("jump", false):
 			should_jump = true
+
 		if cmd.has("position") and cmd["position"] != Vector3.ZERO:
 			target_pos = cmd["position"]
+		elif cmd.has("pos_x") and (cmd["pos_x"] != 0.0 or cmd["pos_y"] != 0.0 or cmd["pos_z"] != 0.0):
+			target_pos = Vector3(cmd["pos_x"], cmd["pos_y"], cmd["pos_z"])
 
 	if target_pos != Vector3.ZERO:
 		global_position = target_pos

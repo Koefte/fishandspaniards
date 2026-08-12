@@ -68,11 +68,14 @@ func _physics_process(delta: float) -> void:
 
 	if net_entity and _inputs_changed():
 		net_entity.actions.append(Packet.new(
-			Packet.PacketType.MOVEMENT,
+			Packet.PacketType.KEY_INPUT,
 			{
-				"move_x": direction.x,
-				"move_y": direction.y,
-				"move_z": direction.z,
+				"forward": Input.is_action_pressed("move_forward") if InputMap.has_action("move_forward") else false,
+				"backward": Input.is_action_pressed("move_backward") if InputMap.has_action("move_backward") else false,
+				"left": Input.is_action_pressed("move_left") if InputMap.has_action("move_left") else false,
+				"right": Input.is_action_pressed("move_right") if InputMap.has_action("move_right") else false,
+				"jump": jump_pressed,
+				"rot_y": rotation.y,
 				"pos_x": global_position.x,
 				"pos_y": global_position.y,
 				"pos_z": global_position.z

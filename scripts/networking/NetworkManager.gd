@@ -55,11 +55,14 @@ func _initiate_game_start():
 		send_game_state(GameStateManager.get_entire_state())
 	else:
 		SteamAPIManager.send_packet(Packet.new(
-			Packet.PacketType.MOVEMENT,
+			Packet.PacketType.KEY_INPUT,
 			{
-				"move_x": 0,
-				"move_y": 0,
-				"move_z": 0,
+				"forward": false,
+				"backward": false,
+				"left": false,
+				"right": false,
+				"jump": false,
+				"rot_y": player_node.rotation.y,
 				"pos_x": player_pos.x,
 				"pos_y": player_pos.y,
 				"pos_z": player_pos.z
@@ -84,8 +87,12 @@ func receive_packet(p: Packet):
 	if p.type == Packet.PacketType.START_GAME:
 		if not SteamAPIManager.is_host():
 			_initiate_game_start()
+	elif p.type == Packet.PacketType.KEY_INPUT:
+		GameStateManager.set_key_input(p.owner_id, p.data)
+		if SteamAPIManager.is_host():
+			send_game_state(GameStateManager.get_entire_state())
 	elif p.type == Packet.PacketType.MOVEMENT:
-		var move_vec = Vector3(p.data.move_x, p.data.move_y, p.data.move_z)
+		var move_vec = Vector3(p.data.get("move_x", 0), p.data.get("move_y", 0), p.data.get("move_z", 0))
 		var new_pos = Vector3.ZERO
 		if p.data.has("pos_x"):
 			new_pos = Vector3(p.data.pos_x, p.data.pos_y, p.data.pos_z)

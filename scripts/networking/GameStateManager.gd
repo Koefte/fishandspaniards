@@ -45,6 +45,14 @@ func set_movement(entity, move_vec: Vector3, new_pos: Vector3 = Vector3.ZERO) ->
 				target.node_ref.velocity = move_vec
 				target.pos = target.node_ref.global_position
 
+func set_key_input(entity, key_data: Dictionary) -> void:
+	var target_id = entity.id if entity is NetEntity else entity
+	if network_objects.has(target_id):
+		var target: NetEntity = network_objects[target_id]
+		if target.node_ref and is_instance_valid(target.node_ref):
+			if target.node_ref.has_method("receive_key_input_packet"):
+				target.node_ref.receive_key_input_packet(key_data)
+
 func set_state_data(state_data: Dictionary) -> void:
 	if not state_data.has("id"):
 		return
