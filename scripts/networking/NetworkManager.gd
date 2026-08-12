@@ -1,6 +1,6 @@
 class_name NetworkManager_Internal extends Node
 
-const STATE_TIME = 1
+const STATE_TIME = 5
 
 const log_debug = true
 

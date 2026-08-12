@@ -82,6 +82,7 @@ func _poll_incoming_packets() -> void:
 
 			if not raw_bytes.is_empty():
 				_decode_and_route(sender_steam_id, raw_bytes)
+				
 
 		packet_size = Steam.getAvailableP2PPacketSize(channel)
 
@@ -136,7 +137,6 @@ func _on_lobby_joined(lobby_id: int, _permissions: int, _locked: bool, response:
 	if host_id != Steam.getSteamID():
 		Steam.acceptP2PSessionWithUser(host_id)
 
-	send_packet(Packet.new(Packet.PacketType.DEBUG, {"message": "hey"}))
 	print("[SteamP2P] Joined Lobby ", lobby_id, " (Host ID: ", host_id, ")")
 
 func send_packet(p: Packet) -> void:
