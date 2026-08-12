@@ -2,7 +2,7 @@ class_name NetworkManager_Internal extends Node
 
 const STATE_TIME = 5
 
-const log_debug = true
+const log_debug = false
 
 var id_counter: int = 0
 var delta_t_acc: float = 0.0
@@ -53,6 +53,19 @@ func _initiate_game_start():
 			GameStateManager.register_object(remote_entity)
 			id_counter += 1
 		send_game_state(GameStateManager.get_entire_state())
+	else:
+		SteamAPIManager.send_packet(Packet.new(
+			Packet.PacketType.MOVEMENT,
+			{
+				"move_x": 0,
+				"move_y": 0,
+				"move_z": 0,
+				"pos_x": player_pos.x,
+				"pos_y": player_pos.y,
+				"pos_z": player_pos.z
+			},
+			local_player
+		))
 
 func send_actor_actions():
 	var objects = GameStateManager.get_objects()
@@ -77,6 +90,8 @@ func receive_packet(p: Packet):
 		if p.data.has("pos_x"):
 			new_pos = Vector3(p.data.pos_x, p.data.pos_y, p.data.pos_z)
 		GameStateManager.set_movement(p.owner_id, move_vec, new_pos)
+		if SteamAPIManager.is_host():
+			send_game_state(GameStateManager.get_entire_state())
 
 func receive_state(s: State):
 	if SteamAPIManager.is_host():

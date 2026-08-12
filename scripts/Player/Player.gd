@@ -37,15 +37,19 @@ func _physics_process(delta: float) -> void:
 
 	var current_direction = Vector3.ZERO
 	var should_jump = false
+	var target_pos = Vector3.ZERO
 
-	if not input_queue.is_empty():
+	while not input_queue.is_empty():
 		var cmd: Dictionary = input_queue.pop_front()
 		if cmd.has("direction"):
 			current_direction = cmd["direction"]
-		if cmd.has("jump"):
-			should_jump = cmd["jump"]
+		if cmd.has("jump") and cmd["jump"]:
+			should_jump = true
 		if cmd.has("position") and cmd["position"] != Vector3.ZERO:
-			global_position = cmd["position"]
+			target_pos = cmd["position"]
+
+	if target_pos != Vector3.ZERO:
+		global_position = target_pos
 
 	if should_jump and is_on_floor():
 		velocity.y = jump_velocity

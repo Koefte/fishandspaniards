@@ -52,14 +52,11 @@ func _broadcast_raw_bytes(raw_bytes: PackedByteArray, is_state: bool) -> void:
 	var num_members: int = Steam.getNumLobbyMembers(current_lobby_id)
 	var send_type: int = Steam.P2P_SEND_UNRELIABLE_NO_DELAY if is_state else Steam.P2P_SEND_RELIABLE
 
-	print("[SteamP2P] Broadcasting payload (size: ", payload.size(), " bytes) to ", num_members, " lobby members...")
-
 	for i in range(num_members):
 		var target_steam_id: int = Steam.getLobbyMemberByIndex(current_lobby_id, i)
 		if target_steam_id != my_steam_id:
 			Steam.acceptP2PSessionWithUser(target_steam_id)
-			var sent: bool = Steam.sendP2PPacket(target_steam_id, payload, send_type, 0)
-			print("[SteamP2P] Send P2P Packet to ", target_steam_id, " -> Result: ", sent)
+			Steam.sendP2PPacket(target_steam_id, payload, send_type, 0)
 
 func _poll_incoming_packets() -> void:
 	var channel: int = 0
@@ -67,7 +64,6 @@ func _poll_incoming_packets() -> void:
 
 	while packet_size > 0:
 		var packet_dict: Dictionary = Steam.readP2PPacket(packet_size, channel)
-		print("[SteamP2P] Incoming P2P Packet detected! Dictionary: ", packet_dict)
 
 		if not packet_dict.is_empty():
 			var sender_steam_id: int = 0
@@ -82,7 +78,6 @@ func _poll_incoming_packets() -> void:
 
 			if not raw_bytes.is_empty():
 				_decode_and_route(sender_steam_id, raw_bytes)
-				
 
 		packet_size = Steam.getAvailableP2PPacketSize(channel)
 
@@ -104,11 +99,9 @@ func _decode_and_route(sender_id: int, raw_bytes: PackedByteArray) -> void:
 	match header:
 		0: # Packet
 			var pkt: Packet = construct_packet(payload_slice)
-			print("[SteamP2P] Received Packet from ", sender_id, ": type=", pkt.type)
 			NetworkManager.receive_packet(pkt)
 		1: # State
 			var state_val = bytes_to_var(payload_slice)
-			print("[SteamP2P] Received State from ", sender_id)
 			NetworkManager.receive_state(State.new(state_val))
 		_:
 			printerr("[SteamP2P] Unknown packet header received: ", header)
