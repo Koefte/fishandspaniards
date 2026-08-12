@@ -10,6 +10,7 @@ var delta_t_acc: float = 0.0
 func _process(delta: float) -> void:
 	delta_t_acc += delta
 	if delta_t_acc > STATE_TIME:
+		print("[NetworkManager] state update")
 		if SteamAPIManager.is_host():
 			GameStateManager.update_entities()
 			send_game_state(GameStateManager.get_entire_state())
@@ -73,16 +74,12 @@ func receive_packet(p: Packet):
 			_initiate_game_start()
 	elif p.type == Packet.PacketType.KEY_INPUT:
 		GameStateManager.set_key_input(p.owner_id, p.data)
-		if SteamAPIManager.is_host():
-			send_game_state(GameStateManager.get_entire_state())
 	elif p.type == Packet.PacketType.MOVEMENT:
 		var move_vec = Vector3(p.data.get("move_x", 0), p.data.get("move_y", 0), p.data.get("move_z", 0))
 		var new_pos = Vector3.ZERO
 		if p.data.has("pos_x"):
 			new_pos = Vector3(p.data.pos_x, p.data.pos_y, p.data.pos_z)
 		GameStateManager.set_movement(p.owner_id, move_vec, new_pos)
-		if SteamAPIManager.is_host():
-			send_game_state(GameStateManager.get_entire_state())
 
 func receive_state(s: State):
 	if SteamAPIManager.is_host():

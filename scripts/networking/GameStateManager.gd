@@ -66,8 +66,8 @@ func set_state_data(state_data: Dictionary) -> void:
 	if state_data.has("pos"):
 		target.pos = state_data["pos"]
 		if target.node_ref and is_instance_valid(target.node_ref) and target.authority_role != NetEntity.AuthorityRole.AUTONOMOUS_PROXY:
-			if target.node_ref.has_method("push_network_input"):
-				target.node_ref.push_network_input(target.dir if state_data.has("dir") else Vector3.ZERO, target.pos)
+			if target.node_ref.has_method("push_input_command"):
+				target.node_ref.push_input_command({ "position": target.pos })
 			else:
 				target.node_ref.global_position = target.pos
 	if state_data.has("dir"):
