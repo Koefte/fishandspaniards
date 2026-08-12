@@ -33,7 +33,8 @@ func _get_local_entity_id() -> int:
 
 func _initiate_game_start():
 	GameStateManager.start_game()
-	await get_tree().process_frame
+	while get_tree().current_scene == null or not get_tree().current_scene.has_node("Player"):
+		await get_tree().process_frame
 	var player_node: Node3D = get_tree().current_scene.get_node("Player")
 	var player_pos: Vector3 = player_node.global_position
 

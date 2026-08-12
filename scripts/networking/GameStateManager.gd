@@ -26,7 +26,8 @@ func register_object(entity: NetEntity) -> void:
 	if entity.entity_type == NetEntity.EntityType.NETWORKED_PLAYER and entity.node_ref == null:
 		var instance = networked_player_scene.instantiate()
 		entity.node_ref = instance
-		get_tree().current_scene.add_child(instance)
+		if get_tree().current_scene:
+			get_tree().current_scene.add_child(instance)
 		instance.global_position = entity.pos
 
 func set_movement(entity, move_vec: Vector3, new_pos: Vector3 = Vector3.ZERO) -> void:
