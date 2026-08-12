@@ -76,9 +76,6 @@ func _physics_process(delta: float) -> void:
 				"right": Input.is_action_pressed("move_right") if InputMap.has_action("move_right") else false,
 				"jump": jump_pressed,
 				"rot_y": rotation.y,
-				"pos_x": global_position.x,
-				"pos_y": global_position.y,
-				"pos_z": global_position.z
 			},
 			net_entity
 		))

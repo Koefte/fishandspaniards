@@ -53,22 +53,6 @@ func _initiate_game_start():
 			GameStateManager.register_object(remote_entity)
 			id_counter += 1
 		send_game_state(GameStateManager.get_entire_state())
-	else:
-		SteamAPIManager.send_packet(Packet.new(
-			Packet.PacketType.KEY_INPUT,
-			{
-				"forward": false,
-				"backward": false,
-				"left": false,
-				"right": false,
-				"jump": false,
-				"rot_y": player_node.rotation.y,
-				"pos_x": player_pos.x,
-				"pos_y": player_pos.y,
-				"pos_z": player_pos.z
-			},
-			local_player
-		))
 
 func send_actor_actions():
 	var objects = GameStateManager.get_objects()
