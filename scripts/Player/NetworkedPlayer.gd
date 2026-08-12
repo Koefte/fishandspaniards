@@ -16,19 +16,17 @@ func _physics_process(delta: float) -> void:
 	if not is_on_floor():
 		velocity.y -= gravity * delta
 
-	var target_pos = Vector3.ZERO
+	var target_pos
 
 	while not input_queue.is_empty():
 		var cmd: Dictionary = input_queue.pop_front()
 		for key in ["forward", "backward", "left", "right", "jump", "rot_y"]:
 			if cmd.has(key):
 				active_key_state[key] = cmd[key]
-		if cmd.has("position") and cmd["position"] != Vector3.ZERO:
+		if cmd.has("position"):
 			target_pos = cmd["position"]
-		elif cmd.has("pos_x") and (cmd["pos_x"] != 0.0 or cmd["pos_y"] != 0.0 or cmd["pos_z"] != 0.0):
-			target_pos = Vector3(cmd["pos_x"], cmd["pos_y"], cmd["pos_z"])
 
-	if target_pos != Vector3.ZERO and global_position.distance_to(target_pos) > 1.0:
+	if target_pos != null:
 		global_position = target_pos
 
 	rotation.y = active_key_state.get("rot_y", rotation.y)

@@ -74,15 +74,9 @@ func receive_packet(p: Packet):
 			_initiate_game_start()
 	elif p.type == Packet.PacketType.KEY_INPUT:
 		GameStateManager.set_key_input(p.owner_id, p.data)
-	elif p.type == Packet.PacketType.MOVEMENT:
-		var move_vec = Vector3(p.data.get("move_x", 0), p.data.get("move_y", 0), p.data.get("move_z", 0))
-		var new_pos = Vector3.ZERO
-		if p.data.has("pos_x"):
-			new_pos = Vector3(p.data.pos_x, p.data.pos_y, p.data.pos_z)
-		GameStateManager.set_movement(p.owner_id, move_vec, new_pos)
 
 func receive_state(s: State):
 	if SteamAPIManager.is_host():
 		return
 	if s:
-		GameStateManager.set_obj(s.state_data if "state_data" in s else s.obj)
+		GameStateManager.set_obj(s.state_data)

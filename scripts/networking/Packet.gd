@@ -7,11 +7,7 @@ var data: Dictionary = {}
 var owner_id: int = 0
 var owner: Object = null
 
-const DEFAULT_MOVE_PACKET = {
-	move_x = 0,
-	move_y = 0,
-	move_z = 0
-}
+
 const DEFAULT_KEY_INPUT_PACKET = {
 	"forward": false,
 	"backward": false,
@@ -27,7 +23,6 @@ const DEFAULT_DEBUG_PACKET = {
 }
 
 const DEFAULT_PACKETS = {
-	PacketType.MOVEMENT: DEFAULT_MOVE_PACKET,
 	PacketType.KEY_INPUT: DEFAULT_KEY_INPUT_PACKET,
 	PacketType.DESTROY: DEFAULT_DESTROY_PACKET,
 	PacketType.START_GAME: DEFAULT_START_GAME_PACKET,
