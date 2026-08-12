@@ -1,12 +1,16 @@
 class_name State extends NetworkedDataObject
 
-var obj: GameObject
+var state_data: Dictionary = {}
 
 func serialize() -> PackedByteArray:
-	var arr = PackedByteArray()
-	arr.append(1) # 0 -> Packet , 1 -> State
-	arr.append_array(var_to_bytes(obj))
-	return arr
+	return var_to_bytes(state_data)
 
-func _init(pObj:GameObject):
-	obj = pObj
+func _init(pObj = null):
+	if pObj is NetEntity:
+		state_data = {
+			"id": pObj.id,
+			"pos": pObj.pos,
+			"dir": pObj.dir
+		}
+	elif pObj is Dictionary:
+		state_data = pObj

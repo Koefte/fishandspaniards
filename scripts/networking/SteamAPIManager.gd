@@ -1,11 +1,11 @@
-class_name SteamAPIManager
+class_name SteamAPIManager_Internal extends Node
 
 
 #enum lobby_status{Private, Friends, Public, Invisible}
 
 
-var current_lobby_id: int = 0
-var host_id : int = -1
+@export var current_lobby_id: int = 0
+@export var host_id : int = -1
 
 #Internal Functions
 
@@ -17,9 +17,9 @@ func _broadcast_raw_bytes(raw_bytes: PackedByteArray, is_state: bool) -> void:
 	
 	var send_type: int
 	if is_state:
-		send_type = Steam.P2P_SEND_RELIABLE 
+		send_type = Steam.P2P_SEND_UNRELIABLE_NO_DELAY
 	else:
-		send_type = Steam.P2P_SEND_UNRELIABLE_NO_DELAY 
+		send_type = Steam.P2P_SEND_RELIABLE
 
 	for i in range(num_members):
 		var target_steam_id: int = Steam.getLobbyMemberByIndex(current_lobby_id, i)
@@ -46,13 +46,13 @@ func _poll_incoming_packets() -> void:
 
 func construct_packet(raw_bytes: PackedByteArray) -> Packet:
 	var buffer = Buffer.new(raw_bytes)
-	var type = buffer.consume(1)
-	var owner_id = buffer.consume(1)
+	var type = buffer.consume_byte()
+	var owner_id = buffer.consume_byte()
 	var data = bytes_to_var(buffer.consume_rest())
 	return Packet.new(type,data,owner_id)
 			
 
-static func _decode_and_route(sender_id: int, raw_bytes: PackedByteArray) -> void:
+func _decode_and_route(sender_id: int, raw_bytes: PackedByteArray) -> void:
 	
 	var header: int = raw_bytes[0]
 	
@@ -74,8 +74,8 @@ func _on_lobby_created(connect_res: int,lobby_id:int):
 		printerr("Failed to create lobby")
 		return
 	current_lobby_id = lobby_id
+	host_id = Steam.getSteamID()
 	Steam.setLobbyData(lobby_id,"name",Steam.getPersonaName() + "'s Lobby")
-	Steam.setLobbyData(lobby_id,"name","fish and ships")
 	
 	
 func _on_lobby_joined(lobby_id:int,_permissions:int,_locked:bool,response: int):
@@ -88,10 +88,10 @@ func _on_lobby_joined(lobby_id:int,_permissions:int,_locked:bool,response: int):
 
 #Public Functions
 
-static func send_packet(p:Packet):
+func send_packet(p:Packet):
 	_broadcast_raw_bytes(p.serialize(),false)
 
-static func send_state(s:State):
+func send_state(s:State):
 	_broadcast_raw_bytes(s.serialize(),true)
 
 func is_host() -> bool:
@@ -109,8 +109,13 @@ func join_game(host_id:int) -> void:
 	Steam.joinLobby(host_id)
 	print("Joined Lobby")
 
+func get_player_count() -> int:
+	if current_lobby_id != 0:
+		return Steam.getNumLobbyMembers(current_lobby_id)
+	return 1
+
 func _ready() -> void:
-	var init_result = Steam.steamInitEx(false,480)
+	var init_result = Steam.steamInit(480,false)
 	print(init_result)	
 	
 	Steam.lobby_created.connect(_on_lobby_created)
@@ -118,3 +123,4 @@ func _ready() -> void:
 
 func _process(delta: float) -> void:
 	Steam.run_callbacks()
+	_poll_incoming_packets()

@@ -2,43 +2,57 @@ class_name NetworkManager_Internal extends Node
 
 const STATE_TIME = 1
 
-var delta_t_acc = 0
+var id_counter: int = 0
+var delta_t_acc: float = 0.0
 
 func _process(delta: float) -> void:
 	delta_t_acc += delta
 	if delta_t_acc > STATE_TIME:
-		var entire_state = GameStateManager.get_entire_state()
 		if SteamAPIManager.is_host():
-			send_game_state(entire_state)
-		delta_t_acc = 0
+			send_game_state(GameStateManager.get_entire_state())
+		delta_t_acc = 0.0
 	send_actor_actions()
-	
-func start_game():
-	pass
-	
-	
-func send_actor_actions():
-	var actors = GameStateManager.get_actors()
-	for actor in actors:
-		for action in actor.actions:
-			SteamAPIManager.send_packet(Packet.new(action.type,action.data,actor))
 
-func receive_packet(p:Packet):
-	if p.type == Packet.PacketType.MOVEMENT:
-		GameStateManager.set_movement(p.owner,Vector2(p.data.move_x,p.data.move_y))
-	if p.type == Packet.PacketType.DESTROY:
-		GameStateManager.destroy_obj(p.owner)
-		
-func receive_state(s:State):
-	if GameStateManager.is_host():
-		printerr("[NetworkManager] received state allthough user is host")
+func start_game():
+	if not SteamAPIManager.is_host():
 		return
-	GameStateManager.set_obj(s.obj)
-	
-	
-	
-func send_game_state(entire_state:Dictionary):
-	for actor in entire_state.actors:
-		SteamAPIManager.send_state(State.new(actor))
-	for entity in entire_state.entities:
+	GameStateManager.start_game()
+	await get_tree().process_frame
+	var player_node = get_tree().current_scene.get_node_or_null("Player") if get_tree().current_scene else null
+	var player_pos = player_node.global_position if player_node else Vector3.ZERO
+	var local_player = NetEntity.new(id_counter, player_pos, NetEntity.EntityType.PLAYER, NetEntity.AuthorityRole.AUTONOMOUS_PROXY)
+	if player_node:
+		local_player.node_ref = player_node
+		player_node.net_entity = local_player
+
+	GameStateManager.register_object(local_player)
+	id_counter += 1
+
+	for i in SteamAPIManager.get_player_count() - 1:
+		var remote_spawn = Vector3(randi_range(0, 10), 0, randi_range(0, 10))
+		var remote_entity = NetEntity.new(id_counter, remote_spawn, NetEntity.EntityType.NETWORKED_PLAYER, NetEntity.AuthorityRole.SIMULATED_PROXY)
+		GameStateManager.register_object(remote_entity)
+		id_counter += 1
+
+	send_game_state(GameStateManager.get_entire_state())
+
+func send_actor_actions():
+	var objects = GameStateManager.get_objects()
+	for id in objects:
+		var entity: NetEntity = objects[id]
+		for action in entity.poll_actions():
+			SteamAPIManager.send_packet(action)
+
+func send_game_state(entire_state: Array):
+	for entity in entire_state:
 		SteamAPIManager.send_state(State.new(entity))
+
+func receive_packet(p: Packet):
+	if p.type == Packet.PacketType.MOVEMENT:
+		GameStateManager.set_movement(p.owner, Vector3(p.data.move_x, p.data.move_y, p.data.move_z))
+
+func receive_state(s: State):
+	if SteamAPIManager.is_host():
+		return
+	if s:
+		GameStateManager.set_obj(s.state_data if "state_data" in s else s.obj)

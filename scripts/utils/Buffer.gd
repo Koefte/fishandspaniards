@@ -13,6 +13,14 @@ func consume(bytes_count:int):
 	cursor += bytes_count
 	return slice
 
+func consume_byte() -> int:
+	if cursor >= data.size():
+		printerr("[Buffer] You ate enough!")
+		return 0
+	var byte_val = data[cursor]
+	cursor += 1
+	return byte_val
+
 func consume_rest():
 	if cursor >= data.size():
 		printerr("[Buffer] You ate enough!")

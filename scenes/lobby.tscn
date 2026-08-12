@@ -3,6 +3,7 @@
 [ext_resource type="Script" uid="uid://bp7hrkdg3twyq" path="res://scripts/networking/Lobby.gd" id="1_o1atq"]
 
 [node name="Lobby" type="Node2D" unique_id=1615365582]
+script = ExtResource("1_o1atq")
 
 [node name="HostButton" type="Button" parent="." unique_id=664272613]
 offset_left = 243.0
@@ -32,6 +33,3 @@ offset_right = 488.0
 offset_bottom = 504.0
 placeholder_text = "Enter Steam ID"
 alignment = 1
-
-[node name="Lobby" type="Node" parent="." unique_id=1861568170]
-script = ExtResource("1_o1atq")
