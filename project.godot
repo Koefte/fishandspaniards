@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="fishandspaniards"
-run/main_scene="uid://c15yhliwo2yuc"
+run/main_scene="uid://cj27rodtb5krw"
 config/features=PackedStringArray("4.7", "Forward Plus")
 config/icon="res://icon.svg"
 
