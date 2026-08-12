@@ -1,35 +1,137 @@
-[gd_scene format=3 uid="uid://c15yhliwo2yuc"]
+[gd_scene load_steps=2 format=3 uid="uid://c15yhliwo2yuc"]
 
 [ext_resource type="Script" uid="uid://bp7hrkdg3twyq" path="res://scripts/networking/Lobby.gd" id="1_o1atq"]
 
-[node name="Lobby" type="Node2D" unique_id=1615365582]
+[node name="Lobby" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 script = ExtResource("1_o1atq")
 
-[node name="HostButton" type="Button" parent="." unique_id=664272613]
-offset_left = 243.0
-offset_top = 190.0
-offset_right = 480.0
-offset_bottom = 328.0
+[node name="BackgroundPanel" type="Panel" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 40
+theme_override_constants/margin_top = 40
+theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 40
+
+[node name="MainVBox" type="VBoxContainer" parent="MarginContainer"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="TitleLabel" type="Label" parent="MarginContainer/MainVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 32
+text = "FISH AND SPANIARDS"
+horizontal_alignment = 1
+
+[node name="SubtitleLabel" type="Label" parent="MarginContainer/MainVBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "Steam P2P Multiplayer Lobby"
+horizontal_alignment = 1
+
+[node name="HeaderSeparator" type="HSeparator" parent="MarginContainer/MainVBox"]
+layout_mode = 2
+
+[node name="TopControlsHBox" type="HBoxContainer" parent="MarginContainer/MainVBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="HostButton" type="Button" parent="MarginContainer/MainVBox/TopControlsHBox"]
+custom_minimum_size = Vector2(160, 44)
+layout_mode = 2
 text = "Host Lobby"
 
-[node name="StartButton" type="Button" parent="." unique_id=492759647]
-offset_left = 592.0
-offset_top = 198.0
-offset_right = 829.0
-offset_bottom = 336.0
-text = "Start Game"
+[node name="VSeparator" type="VSeparator" parent="MarginContainer/MainVBox/TopControlsHBox"]
+layout_mode = 2
 
-[node name="JoinButton" type="Button" parent="." unique_id=1852629652]
-offset_left = 591.0
-offset_top = 380.0
-offset_right = 828.0
-offset_bottom = 518.0
+[node name="IdInput" type="LineEdit" parent="MarginContainer/MainVBox/TopControlsHBox"]
+custom_minimum_size = Vector2(300, 44)
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Enter Steam Lobby ID to Join"
+alignment = 1
+
+[node name="JoinButton" type="Button" parent="MarginContainer/MainVBox/TopControlsHBox"]
+custom_minimum_size = Vector2(140, 44)
+layout_mode = 2
 text = "Join Lobby"
 
-[node name="IdInput" type="LineEdit" parent="." unique_id=1713070512]
-offset_left = 250.0
-offset_top = 383.0
-offset_right = 488.0
-offset_bottom = 504.0
-placeholder_text = "Enter Steam ID"
-alignment = 1
+[node name="LobbyInfoHBox" type="HBoxContainer" parent="MarginContainer/MainVBox"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="LobbyIdLabel" type="Label" parent="MarginContainer/MainVBox/LobbyInfoHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 18
+text = "Lobby ID: Not Created"
+
+[node name="CopyIdButton" type="Button" parent="MarginContainer/MainVBox/LobbyInfoHBox"]
+custom_minimum_size = Vector2(140, 36)
+layout_mode = 2
+disabled = true
+text = "Copy Lobby ID"
+
+[node name="PlayerListPanel" type="PanelContainer" parent="MarginContainer/MainVBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="PlayerListMargin" type="MarginContainer" parent="MarginContainer/MainVBox/PlayerListPanel"]
+layout_mode = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="PlayerListVBoxContainer" type="VBoxContainer" parent="MarginContainer/MainVBox/PlayerListPanel/PlayerListMargin"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="PlayerCountLabel" type="Label" parent="MarginContainer/MainVBox/PlayerListPanel/PlayerListMargin/PlayerListVBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Connected Players (0 / 4)"
+
+[node name="PlayerListScroll" type="ScrollContainer" parent="MarginContainer/MainVBox/PlayerListPanel/PlayerListMargin/PlayerListVBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="PlayerListVBox" type="VBoxContainer" parent="MarginContainer/MainVBox/PlayerListPanel/PlayerListMargin/PlayerListVBoxContainer/PlayerListScroll"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 8
+
+[node name="BottomActionHBox" type="HBoxContainer" parent="MarginContainer/MainVBox"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="StartButton" type="Button" parent="MarginContainer/MainVBox/BottomActionHBox"]
+custom_minimum_size = Vector2(180, 48)
+layout_mode = 2
+disabled = true
+text = "Start Game"
+
+[node name="StatusLabel" type="Label" parent="MarginContainer/MainVBox/BottomActionHBox"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_font_sizes/font_size = 16
+text = "Ready to host or join a lobby."
+vertical_alignment = 1

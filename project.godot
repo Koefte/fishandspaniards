@@ -17,11 +17,9 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-SteamApiManager="*uid://dcqyu8n3ieely"
 GameStateManager="*uid://dsc2x4t36rgfw"
 NetworkManager="*uid://bo6dbmrqvxcqw"
 SteamAPIManager="*uid://dcqyu8n3ieely"
-Player="*uid://bwh0e0pba2bu3"
 
 [display]
 

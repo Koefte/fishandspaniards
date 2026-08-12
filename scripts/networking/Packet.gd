@@ -1,6 +1,6 @@
 class_name Packet extends NetworkedDataObject
 
-enum PacketType {MOVEMENT, DESTROY}
+enum PacketType {MOVEMENT, DESTROY, START_GAME,DEBUG}
 
 var type: PacketType
 var data: Dictionary = {}
@@ -13,10 +13,16 @@ const DEFAULT_MOVE_PACKET = {
 	move_z = 0
 }
 const DEFAULT_DESTROY_PACKET = {}
+const DEFAULT_START_GAME_PACKET = {}
+const DEFAULT_DEBUG_PACKET =  {
+	message = "hey"
+}
 
 const DEFAULT_PACKETS = {
 	PacketType.MOVEMENT: DEFAULT_MOVE_PACKET,
-	PacketType.DESTROY: DEFAULT_DESTROY_PACKET
+	PacketType.DESTROY: DEFAULT_DESTROY_PACKET,
+	PacketType.START_GAME: DEFAULT_START_GAME_PACKET,
+	PacketType.DEBUG : DEFAULT_DEBUG_PACKET
 }
 
 func ensure_packet_structure(pData: Dictionary, structure: Dictionary) -> bool:
