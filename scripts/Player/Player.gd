@@ -1,35 +1,26 @@
-class_name Player_Internal extends CharacterBody3D
+class_name Player extends CharacterBody3D
 
-enum Perspective { FIRST_PERSON, THIRD_PERSON }
-
-
-@export var speed: float = 6
+@export var speed: float = 6.0
 @export var jump_velocity: float = 4.5
-@export var mouse_sensitivity: float = 0.0025
-@export var current_perspective: Perspective = Perspective.FIRST_PERSON
+var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity", 9.8)
 
-@onready var camera_pivot: Node3D = $Head
-@onready var camera: Camera3D = $Head/Camera3D
-@onready var character_model: Node3D = $MeshInstance3D
+var input_queue: Array = []
+var net_entity: NetEntity = null
 
+var character_model: Node3D = null
 var anim_player: AnimationPlayer = null
 var walk_anim_name: String = ""
-var net_entity: NetEntity = null
+
+func _ready() -> void:
+	if has_node("MeshInstance3D"):
+		character_model = get_node("MeshInstance3D")
+	anim_player = _find_anim_player(self)
 
 func set_net_entity(p_net_entity: NetEntity) -> void:
 	net_entity = p_net_entity
 
-const FIRST_PERSON_CAM_POS: Vector3 = Vector3(0, 0.02, -0.22)
-const THIRD_PERSON_CAM_POS: Vector3 = Vector3(0, 0.4, 2.8)
-
-var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity", 9.8)
-
-func _ready() -> void:
-	camera.current = true
-	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-
-	_apply_perspective()
-
+func push_input_command(command: Dictionary) -> void:
+	input_queue.append(command)
 
 func _find_anim_player(node: Node) -> AnimationPlayer:
 	if node is AnimationPlayer:
@@ -40,72 +31,28 @@ func _find_anim_player(node: Node) -> AnimationPlayer:
 			return found
 	return null
 
-func _unhandled_input(event: InputEvent) -> void:
-	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
-		rotate_y(-event.relative.x * mouse_sensitivity)
-		camera_pivot.rotate_x(-event.relative.y * mouse_sensitivity)
-		camera_pivot.rotation.x = clamp(camera_pivot.rotation.x, deg_to_rad(-89), deg_to_rad(89))
-
-	if event is InputEventKey and event.pressed and not event.echo:
-		if event.keycode == KEY_F5:
-			toggle_perspective()
-
-	if event.is_action_pressed("ui_cancel"):
-		if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
-			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-		else:
-			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
-
-func toggle_perspective() -> void:
-	if current_perspective == Perspective.FIRST_PERSON:
-		current_perspective = Perspective.THIRD_PERSON
-	else:
-		current_perspective = Perspective.FIRST_PERSON
-	_apply_perspective()
-
-func _apply_perspective() -> void:
-	if current_perspective == Perspective.FIRST_PERSON:
-		camera.position = FIRST_PERSON_CAM_POS
-		_set_model_shadow_mode(character_model, GeometryInstance3D.SHADOW_CASTING_SETTING_ON)
-	else:
-		camera.position = THIRD_PERSON_CAM_POS
-		_set_model_shadow_mode(character_model, GeometryInstance3D.SHADOW_CASTING_SETTING_ON)
-
-func _set_model_shadow_mode(node: Node, mode: GeometryInstance3D.ShadowCastingSetting) -> void:
-	if node is GeometryInstance3D:
-		(node as GeometryInstance3D).cast_shadow = mode
-	for child in node.get_children():
-		_set_model_shadow_mode(child, mode)
-
 func _physics_process(delta: float) -> void:
 	if not is_on_floor():
 		velocity.y -= gravity * delta
 
-	if Input.is_action_just_pressed("jump") and is_on_floor():
+	var current_direction = Vector3.ZERO
+	var should_jump = false
+
+	if not input_queue.is_empty():
+		var cmd: Dictionary = input_queue.pop_front()
+		if cmd.has("direction"):
+			current_direction = cmd["direction"]
+		if cmd.has("jump"):
+			should_jump = cmd["jump"]
+		if cmd.has("position") and cmd["position"] != Vector3.ZERO:
+			global_position = cmd["position"]
+
+	if should_jump and is_on_floor():
 		velocity.y = jump_velocity
 
-	var input_dir = _get_movement_vector()
-	var direction = (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
-	if net_entity:
-		net_entity.pos = global_position
-		if _inputs_changed():
-			net_entity.actions.append(Packet.new(
-				Packet.PacketType.MOVEMENT,
-				{
-					"move_x": direction.x,
-					"move_y": direction.y,
-					"move_z": direction.z,
-					"pos_x": global_position.x,
-					"pos_y": global_position.y,
-					"pos_z": global_position.z
-				},
-				net_entity
-			))
-	
-	
-	if direction != Vector3.ZERO:
-		velocity.x = direction.x * speed
-		velocity.z = direction.z * speed
+	if current_direction != Vector3.ZERO:
+		velocity.x = current_direction.x * speed
+		velocity.z = current_direction.z * speed
 	else:
 		velocity.x = move_toward(velocity.x, 0, speed)
 		velocity.z = move_toward(velocity.z, 0, speed)
@@ -116,17 +63,6 @@ func _physics_process(delta: float) -> void:
 		net_entity.pos = global_position
 
 	_update_character_animation()
-
-func _get_movement_vector() -> Vector2:
-	if InputMap.has_action("move_left"):
-		var dir = Input.get_vector("move_left", "move_right", "move_forward", "move_backward")
-		if dir != Vector2.ZERO:
-			return dir
-
-	return Vector2.ZERO
-
-func _inputs_changed():
-	return Input.is_action_just_pressed("jump") or Input.is_action_just_released("jump") or Input.is_action_just_pressed("move_left") or Input.is_action_just_released("move_left") or Input.is_action_just_pressed("move_right")  or Input.is_action_just_released("move_right") or Input.is_action_just_pressed("move_forward") or Input.is_action_just_released("move_forward") or Input.is_action_just_pressed("move_backward") or Input.is_action_just_released("move_backward")
 
 func _update_character_animation() -> void:
 	if anim_player == null or walk_anim_name == "":

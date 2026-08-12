@@ -35,16 +35,15 @@ func set_movement(entity, move_vec: Vector3, new_pos: Vector3 = Vector3.ZERO) ->
 	if network_objects.has(target_id):
 		var target: NetEntity = network_objects[target_id]
 		target.dir = move_vec
-		if new_pos != Vector3.ZERO:
-			target.pos = new_pos
-			if target.node_ref and is_instance_valid(target.node_ref):
+		if target.node_ref and is_instance_valid(target.node_ref):
+			if target.node_ref.has_method("push_network_input"):
+				target.node_ref.push_network_input(move_vec, new_pos)
+			elif new_pos != Vector3.ZERO:
+				target.pos = new_pos
 				target.node_ref.global_position = new_pos
-		elif target.node_ref and is_instance_valid(target.node_ref):
-			if target.node_ref is CharacterBody3D:
+			elif target.node_ref is CharacterBody3D:
 				target.node_ref.velocity = move_vec
-			else:
-				target.node_ref.global_position += move_vec * 0.05
-			target.pos = target.node_ref.global_position
+				target.pos = target.node_ref.global_position
 
 func set_state_data(state_data: Dictionary) -> void:
 	if not state_data.has("id"):
@@ -59,7 +58,10 @@ func set_state_data(state_data: Dictionary) -> void:
 	if state_data.has("pos"):
 		target.pos = state_data["pos"]
 		if target.node_ref and is_instance_valid(target.node_ref) and target.authority_role != NetEntity.AuthorityRole.AUTONOMOUS_PROXY:
-			target.node_ref.global_position = target.pos
+			if target.node_ref.has_method("push_network_input"):
+				target.node_ref.push_network_input(target.dir if state_data.has("dir") else Vector3.ZERO, target.pos)
+			else:
+				target.node_ref.global_position = target.pos
 	if state_data.has("dir"):
 		target.dir = state_data["dir"]
 

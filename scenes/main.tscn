@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://3wjkbd1tiweg"]
 
-[ext_resource type="Script" uid="uid://bwh0e0pba2bu3" path="res://scripts/Player/Player.gd" id="1_o5qli"]
+[ext_resource type="Script" path="res://scripts/Player/LocalPlayer.gd" id="1_o5qli"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_o5qli"]
 sky_horizon_color = Color(0.66224277, 0.6717428, 0.6867428, 1)
