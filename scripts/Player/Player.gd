@@ -8,9 +8,9 @@ enum Perspective { FIRST_PERSON, THIRD_PERSON }
 @export var mouse_sensitivity: float = 0.0025
 @export var current_perspective: Perspective = Perspective.FIRST_PERSON
 
-@onready var camera_pivot: Node3D = get_node_or_null("Head")
-@onready var camera: Camera3D = get_node_or_null("Head/Camera3D")
-@onready var character_model: Node3D = get_node_or_null("MeshInstance3D")
+@onready var camera_pivot: Node3D = $Head
+@onready var camera: Camera3D = $Head/Camera3D
+@onready var character_model: Node3D = $MeshInstance3D
 
 var anim_player: AnimationPlayer = null
 var walk_anim_name: String = ""
@@ -25,8 +25,7 @@ const THIRD_PERSON_CAM_POS: Vector3 = Vector3(0, 0.4, 2.8)
 var gravity: float = ProjectSettings.get_setting("physics/3d/default_gravity", 9.8)
 
 func _ready() -> void:
-	if camera != null:
-		camera.current = true
+	camera.current = true
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 
 	_apply_perspective()
@@ -44,9 +43,8 @@ func _find_anim_player(node: Node) -> AnimationPlayer:
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		rotate_y(-event.relative.x * mouse_sensitivity)
-		if camera_pivot != null:
-			camera_pivot.rotate_x(-event.relative.y * mouse_sensitivity)
-			camera_pivot.rotation.x = clamp(camera_pivot.rotation.x, deg_to_rad(-89), deg_to_rad(89))
+		camera_pivot.rotate_x(-event.relative.y * mouse_sensitivity)
+		camera_pivot.rotation.x = clamp(camera_pivot.rotation.x, deg_to_rad(-89), deg_to_rad(89))
 
 	if event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode == KEY_F5:
@@ -66,17 +64,12 @@ func toggle_perspective() -> void:
 	_apply_perspective()
 
 func _apply_perspective() -> void:
-	if camera == null:
-		return
-
 	if current_perspective == Perspective.FIRST_PERSON:
 		camera.position = FIRST_PERSON_CAM_POS
-		if character_model != null:
-			_set_model_shadow_mode(character_model, GeometryInstance3D.SHADOW_CASTING_SETTING_ON)
+		_set_model_shadow_mode(character_model, GeometryInstance3D.SHADOW_CASTING_SETTING_ON)
 	else:
 		camera.position = THIRD_PERSON_CAM_POS
-		if character_model != null:
-			_set_model_shadow_mode(character_model, GeometryInstance3D.SHADOW_CASTING_SETTING_ON)
+		_set_model_shadow_mode(character_model, GeometryInstance3D.SHADOW_CASTING_SETTING_ON)
 
 func _set_model_shadow_mode(node: Node, mode: GeometryInstance3D.ShadowCastingSetting) -> void:
 	if node is GeometryInstance3D:
@@ -93,8 +86,21 @@ func _physics_process(delta: float) -> void:
 
 	var input_dir = _get_movement_vector()
 	var direction = (transform.basis * Vector3(input_dir.x, 0, input_dir.y)).normalized()
-	if _inputs_changed() and net_entity:
-		net_entity.actions.append(Packet.new(Packet.PacketType.MOVEMENT, {"move_x": direction.x, "move_y": direction.y, "move_z": direction.z}, net_entity))
+	if net_entity:
+		net_entity.pos = global_position
+		if _inputs_changed():
+			net_entity.actions.append(Packet.new(
+				Packet.PacketType.MOVEMENT,
+				{
+					"move_x": direction.x,
+					"move_y": direction.y,
+					"move_z": direction.z,
+					"pos_x": global_position.x,
+					"pos_y": global_position.y,
+					"pos_z": global_position.z
+				},
+				net_entity
+			))
 	
 	
 	if direction != Vector3.ZERO:
@@ -105,6 +111,9 @@ func _physics_process(delta: float) -> void:
 		velocity.z = move_toward(velocity.z, 0, speed)
 
 	move_and_slide()
+
+	if net_entity:
+		net_entity.pos = global_position
 
 	_update_character_animation()
 

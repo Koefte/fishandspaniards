@@ -18,17 +18,12 @@ var _available_npcs: Array[String] = []
 
 func _ready() -> void:
 	line_edit.text_submitted.connect(_on_text_submitted)
-	if send_button:
-		send_button.pressed.connect(_on_send_button_pressed)
-	if npc_select_option:
-		npc_select_option.item_selected.connect(_on_npc_item_selected)
+	send_button.pressed.connect(_on_send_button_pressed)
+	npc_select_option.item_selected.connect(_on_npc_item_selected)
 
 ## Populates the NPC selection dropdown with available character names
 func setup_npc_selector(npc_names: Array[String], current_active: String = "") -> void:
 	_available_npcs = npc_names
-	if not npc_select_option:
-		return
-
 	npc_select_option.clear()
 	var selected_index: int = 0
 
@@ -132,5 +127,4 @@ func _submit_text() -> void:
 
 func _scroll_to_bottom() -> void:
 	await get_tree().process_frame
-	if scroll_container:
-		scroll_container.scroll_vertical = int(scroll_container.get_v_scroll_bar().max_value)
+	scroll_container.scroll_vertical = int(scroll_container.get_v_scroll_bar().max_value)
