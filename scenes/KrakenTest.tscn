@@ -1,0 +1,46 @@
+[gd_scene format=3 uid="uid://brgtt8c7v3pum"]
+
+[ext_resource type="PackedScene" uid="uid://d3cx3b0fxxsdw" path="res://assets/tentacle.glb" id="1_gel3e"]
+[ext_resource type="PackedScene" uid="uid://ciguc0q14wuah" path="res://assets/ship-large.fbx" id="1_xrhom"]
+[ext_resource type="Script" uid="uid://b6qbylouyku0v" path="res://scripts/tentacle_wrapper.gd" id="2_script"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_0xdfj"]
+size = Vector3(5.3582764, 4.0980225, 11.139893)
+
+[node name="KrakenTest" type="Node3D" unique_id=1218445832]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1335349822]
+transform = Transform3D(0.866025, -0.353553, 0.353553, 0, 0.707107, 0.707107, -0.5, -0.612372, 0.612372, 0, 10, 0)
+shadow_enabled = true
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=244622194]
+transform = Transform3D(-0.16858393, -0.25511494, 0.95210075, 0, 0.9659257, 0.2588193, -0.9856874, 0.043632783, -0.16283959, 9.847553, 3.1470847, 1.0328087)
+
+[node name="ship-large" parent="." unique_id=981080748 instance=ExtResource("1_xrhom")]
+
+[node name="StaticBody3D" type="StaticBody3D" parent="ship-large" unique_id=1934122199]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ship-large/StaticBody3D" unique_id=1375194068]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.10218954, 2.1767192, -0.6536865)
+shape = SubResource("BoxShape3D_0xdfj")
+
+[node name="SuctionPoint1" type="Marker3D" parent="ship-large" unique_id=2001]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.4, 1.2, 0.5)
+
+[node name="SuctionPoint2" type="Marker3D" parent="ship-large" unique_id=2002]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.1811357, 2.6540587, -5.2710056)
+
+[node name="tentacle" parent="." unique_id=1708909617 instance=ExtResource("1_gel3e")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, -1, 2)
+script = ExtResource("2_script")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="." unique_id=777916060]
+
+[node name="TestSuctionButton" type="Button" parent="CanvasLayer" unique_id=462086493]
+offset_left = 24.0
+offset_top = 24.0
+offset_right = 280.0
+offset_bottom = 72.0
+text = "🐙 Toggle Tentacle Suction (SPACE)"
+
+[connection signal="pressed" from="CanvasLayer/TestSuctionButton" to="tentacle" method="toggle_wrap"]
