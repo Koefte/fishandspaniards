@@ -48,6 +48,17 @@ var target_progress: float = 0.0
 var _latched_points: Dictionary = {}
 var _time_passed: float = 0.0
 
+## Triggers the tentacle to unwrap and safely destroys it once fully retracted
+func retract_and_despawn() -> void:
+	# 1. Start the unwrapping process (sets target_progress to 0.0)
+	release_ship()
+	
+	# 2. Wait for the _process loop to finish the interpolation and emit the signal
+	await unwrapping_completed
+	
+	# 3. Safely remove the tentacle from the scene tree
+	queue_free()
+
 func _ready() -> void:
 	# Snap to the anchor point so our global_position math matches
 	if base_point:
