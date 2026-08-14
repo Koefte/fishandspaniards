@@ -118,12 +118,10 @@ func _physics_process(delta: float) -> void:
 					tip_node.global_position = hit_pt
 					harpoon_hit.emit(hit_pt, hit_norm, collider)
 					
-					var hit_tentacle: bool = _check_tentacle_hit(collider)
-					if hit_tentacle:
-						start_retracting()
-					else:
-						current_state = State.LATCHED
-						latch_timer = latch_duration
+				
+					
+					current_state = State.LATCHED
+					latch_timer = latch_duration
 					_update_rope()
 					return
 
@@ -161,15 +159,6 @@ func _physics_process(delta: float) -> void:
 				tip_node.global_position += move_dir * retract_speed * delta
 				_update_rope()
 
-func _check_tentacle_hit(collider: Node) -> bool:
-	var current: Node = collider
-	while current != null:
-		if current is TentacleWrapper or current.has_method("retract_and_despawn"):
-			current.call("retract_and_despawn")
-			print("Retraceted")
-			return true
-		current = current.get_parent()
-	return false
 
 func _clear_rope() -> void:
 

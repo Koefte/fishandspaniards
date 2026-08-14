@@ -1,6 +1,6 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene format=3 uid="uid://dd2xj8078dyc2"]
 
-[ext_resource type="Script" path="res://scripts/Player/Harpoon3D.gd" id="1_harpoon"]
+[ext_resource type="Script" uid="uid://bov4iwistw0wd" path="res://scripts/Player/Harpoon3D.gd" id="1_harpoon"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_metal"]
 albedo_color = Color(0.2, 0.22, 0.25, 1)
@@ -18,41 +18,41 @@ albedo_color = Color(0.8, 0.82, 0.85, 1)
 metallic = 0.95
 roughness = 0.15
 
-[sub_resource type="CylinderMesh" id="CylinderMesh_tip"]
-material = SubResource("StandardMaterial3D_spear")
-top_radius = 0.0
-bottom_radius = 0.04
-height = 0.25
-
 [sub_resource type="CylinderMesh" id="CylinderMesh_shaft"]
 material = SubResource("StandardMaterial3D_spear")
 top_radius = 0.025
 bottom_radius = 0.025
 height = 0.5
 
-[node name="Harpoon" type="Node3D"]
+[sub_resource type="CylinderMesh" id="CylinderMesh_tip"]
+material = SubResource("StandardMaterial3D_spear")
+top_radius = 0.0
+bottom_radius = 0.04
+height = 0.25
+
+[node name="Harpoon" type="Node3D" unique_id=1623112473]
 script = ExtResource("1_harpoon")
 
-[node name="LauncherMount" type="Node3D" parent="."]
+[node name="LauncherMount" type="Node3D" parent="." unique_id=545439317]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, -0.25, -0.4)
 
-[node name="LauncherMesh" type="MeshInstance3D" parent="LauncherMount"]
+[node name="LauncherMesh" type="MeshInstance3D" parent="LauncherMount" unique_id=889296270]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
 mesh = SubResource("CylinderMesh_barrel")
 
-[node name="HarpoonTip" type="Node3D" parent="."]
+[node name="HarpoonTip" type="Node3D" parent="." unique_id=1492614256]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.3, -0.25, -0.5)
 
-[node name="ShaftMesh" type="MeshInstance3D" parent="HarpoonTip"]
+[node name="ShaftMesh" type="MeshInstance3D" parent="HarpoonTip" unique_id=1479533925]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, -0.15)
 mesh = SubResource("CylinderMesh_shaft")
 
-[node name="TipMesh" type="MeshInstance3D" parent="HarpoonTip"]
+[node name="TipMesh" type="MeshInstance3D" parent="HarpoonTip" unique_id=1332875826]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, -0.4)
 mesh = SubResource("CylinderMesh_tip")
 
-[node name="RayCast3D" type="RayCast3D" parent="HarpoonTip"]
+[node name="RayCast3D" type="RayCast3D" parent="HarpoonTip" unique_id=1825281644]
 target_position = Vector3(0, 0, -1)
 collide_with_areas = true
 
-[node name="RopeMesh" type="MeshInstance3D" parent="."]
+[node name="RopeMesh" type="MeshInstance3D" parent="." unique_id=167014528]

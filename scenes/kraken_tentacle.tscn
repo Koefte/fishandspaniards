@@ -1,19 +1,51 @@
-[gd_scene format=3 uid="uid://b8x3m4k2wap1a"]
+[gd_scene format=3 uid="uid://dbf0moq7ybvxj"]
 
-[ext_resource type="Script" uid="uid://b6qbylouyku0v" path="res://scripts/tentacle_wrapper.gd" id="1_wrapper"]
-[ext_resource type="PackedScene" uid="uid://bf38aa3rq34mv" path="res://assets/kraken_tentacle.glb" id="2_model"]
+[ext_resource type="ArrayMesh" uid="uid://d047m30e7lh3u" path="res://assets/suction_cylinder_mesh.tres" id="1_d5pd8"]
 
-[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_lhcm0"]
-points = PackedVector3Array(0.097544365, 1.1404389, -3.7157028, -0.09257758, -1.1452382, -1.4308085, 0.097544365, -1.1452382, -1.4308085, -0.2831097, -0.19242835, -12.092852, -1.0452383, 0.56889844, 0.094044685, 1.05, 0.56889844, 0.094044685, 0.2880765, -0.19242835, -12.092852, -1.0452383, -0.57345533, 0.094044685, 1.05, -0.57345533, 0.094044685, 0.8594678, 1.1404389, -0.47747707, -0.2831097, 0.37838498, -11.140713, 0.2880765, 0.37838498, -11.140713, -0.47343674, 1.1404389, 0.094044685, -0.854501, 0.75941193, -3.7157028, 0.47840354, -1.1452382, 0.094044685, -0.47343674, -1.1452382, -0.66838217, 0.2880765, -0.57345533, -9.045531, 1.05, 0.18787149, -1.6205206, -1.0452383, -0.19242835, -1.6205206, -0.2831097, -0.3829418, -11.140713, 0.8594678, 0.75941193, -3.5247977, -0.09257758, 1.3309524, -0.66838217, -0.2831097, 0.75941193, -7.903681, 0.8594678, -0.7642112, -1.8114257, -0.47343674, 0.37838498, -9.998863, -0.854501, -0.7642112, -1.8114257, 0.47840354, -0.19242835, -9.998863, 0.2880765, 0.18787149, -12.092852, -0.47343674, -0.19242835, -9.998863, 0.2880765, 1.3309524, -0.28776503, -0.47343674, -1.1452382, 0.094044685, 0.8594678, 1.1404389, -0.8592868)
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_lhcm0"]
+sky_horizon_color = Color(0.66, 0.67, 0.69, 1)
+ground_horizon_color = Color(0.66, 0.67, 0.69, 1)
 
-[node name="KrakenTentacle" type="Node3D" unique_id=1687440051]
-script = ExtResource("1_wrapper")
+[sub_resource type="Sky" id="Sky_jpv5p"]
+sky_material = SubResource("ProceduralSkyMaterial_lhcm0")
 
-[node name="kraken_tentacle" parent="." unique_id=1834970966 instance=ExtResource("2_model")]
+[sub_resource type="Environment" id="Environment_2hd3r"]
+background_mode = 2
+sky = SubResource("Sky_jpv5p")
+glow_enabled = true
 
-[node name="StaticBody3D" type="StaticBody3D" parent="." unique_id=271742106]
+[sub_resource type="Curve3D" id="Curve3D_aadpk"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 2.5, 0.8, 0, 0, 0, -0.2, -1.2, -0.6, 0.3, 1.5, 0.8, 0.3, 3.2, 1.5, -0.4, -1.2, -0.6, 0.5, 1.2, 0.4, 1, 5.8, 2.8, -0.5, -0.8, 0.6, 0.4, 0.5, -0.5, 1.8, 7.5, 2.2, -0.3, -0.4, 0.4, 0, 0, 0, 2.2, 8.2, 1.4),
+"tilts": PackedFloat32Array(0, 0, 0, 0, 0)
+}
+point_count = 5
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" unique_id=1818866650]
-shape = SubResource("ConvexPolygonShape3D_lhcm0")
+[node name="KrakenTentacle" type="Node3D" unique_id=199083354]
 
-[editable path="kraken_tentacle"]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=61767019]
+environment = SubResource("Environment_2hd3r")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=546282775]
+transform = Transform3D(0.8660254, -0.35355338, 0.35355338, 0, 0.70710677, 0.70710677, -0.5, -0.6123724, 0.6123724, 0, 10, 0)
+shadow_enabled = true
+
+[node name="Camera3D" type="Camera3D" parent="." unique_id=2003247527]
+transform = Transform3D(0.087155804, 0.25783417, -0.9622502, 0, 0.9659258, 0.25881904, 0.9961947, -0.022557583, 0.08418604, -6, 4, 6)
+
+[node name="Path3D" type="Path3D" parent="." unique_id=967271389]
+curve = SubResource("Curve3D_aadpk")
+
+[node name="PathMesh3D" type="PathMesh3D" parent="." unique_id=1224783976 node_paths=PackedStringArray("path_3d")]
+path_3d = NodePath("../Path3D")
+mesh = ExtResource("1_d5pd8")
+surface_0/offset = Vector2(0, 0)
+surface_0/rotation = Vector3(0, 0, 0)
+surface_0/rotation_order = 2
+surface_0/distribution = 0
+surface_0/alignment = 0
+surface_0/mesh_length_override = 0.5
+surface_0/warp_along_curve = true
+surface_0/sample_cubic = false
+surface_0/tilt = true
+surface_0/triangle_count = 3097
