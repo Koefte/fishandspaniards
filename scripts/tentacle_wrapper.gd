@@ -22,8 +22,11 @@ signal unwrapping_completed
 		wrap_progress = clamp(val, 0.0, 1.0)
 		_update_wrapping_pose()
 
-## Speed of wrapping/unwrapping transition
+## Speed of wrapping (attaching) transition
 @export var wrap_speed: float = 1.2
+## Speed of unwrapping (releasing) transition - slower for dramatic effect
+@export var release_speed: float = 0.3
+
 
 @export_group("Procedural Wobble")
 @export var enable_wobble: bool = true
@@ -48,8 +51,20 @@ var target_progress: float = 0.0
 var _latched_points: Dictionary = {}
 var _time_passed: float = 0.0
 
+@export_group("Pain & Thrash Effect")
+## Extra wobble multiplier when the tentacle is unwrapping in pain
+@export var pain_wobble_multiplier: float = 2.8
+@export var pain_recoil_intensity: float = 0.45
+
+var _pain_impulse: float = 0.0
+
+## Triggers a brief visceral spasm/recoil when hit by a harpoon
+func trigger_pain_recoil() -> void:
+	_pain_impulse = 1.0
+
 ## Triggers the tentacle to unwrap and safely destroys it once fully retracted
 func retract_and_despawn() -> void:
+	trigger_pain_recoil()
 	# 1. Start the unwrapping process (sets target_progress to 0.0)
 	release_ship()
 	
@@ -59,12 +74,16 @@ func retract_and_despawn() -> void:
 	# 3. Safely remove the tentacle from the scene tree
 	queue_free()
 
+
+var dynamic_colliders: Array[CollisionShape3D] = []
+
 func _ready() -> void:
 	# Snap to the anchor point so our global_position math matches
 	if base_point:
 		global_position = base_point.global_position
 		
 	_setup_skeleton_references()
+	_setup_dynamic_colliders()
 
 func _setup_skeleton_references() -> void:
 	bone_ids.clear()
@@ -79,12 +98,42 @@ func _setup_skeleton_references() -> void:
 
 	print("TentacleWrapper: Registered ", bone_ids.size(), " bones in skeleton.")
 
+func _setup_dynamic_colliders() -> void:
+	var sb: StaticBody3D = get_node_or_null("StaticBody3D") as StaticBody3D
+	if not sb:
+		sb = StaticBody3D.new()
+		sb.name = "StaticBody3D"
+		add_child(sb)
+	
+	for child in sb.get_children():
+		child.queue_free()
+		
+	dynamic_colliders.clear()
+	var sphere_shape = SphereShape3D.new()
+	sphere_shape.radius = 0.65
+	
+	for i in range(bone_ids.size()):
+		var col_shape = CollisionShape3D.new()
+		col_shape.shape = sphere_shape
+		sb.add_child(col_shape)
+		dynamic_colliders.append(col_shape)
+
+
 func _process(delta: float) -> void:
 	_time_passed += delta
 	
-	# 1. Handle Smooth Wrapping Progress
+	if _pain_impulse > 0.0:
+		_pain_impulse = move_toward(_pain_impulse, 0.0, delta * 3.0)
+	
+	# 1. Handle Smooth Non-Linear Wrapping & Releasing Progress
 	if not is_equal_approx(wrap_progress, target_progress):
-		var step: float = wrap_speed * delta
+		var step: float
+		if target_progress < wrap_progress: # Releasing (Unwrapping)
+			var curve_factor: float = lerp(1.8, 0.4, 1.0 - wrap_progress)
+			step = release_speed * curve_factor * delta
+		else: # Attaching (Wrapping)
+			step = wrap_speed * delta
+			
 		wrap_progress = move_toward(wrap_progress, target_progress, step)
 		
 		if wrap_progress >= 1.0 and is_wrapping:
@@ -93,8 +142,8 @@ func _process(delta: float) -> void:
 		elif wrap_progress <= 0.0 and not is_wrapping:
 			unwrapping_completed.emit()
 
-	# 2. Procedural Wobble (Updates the pose locally every frame based on time)
-	if enable_wobble and wrap_progress > 0.0:
+	# 2. Procedural Wobble & Thrash
+	if enable_wobble and (wrap_progress > 0.0 or _pain_impulse > 0.0):
 		_update_wrapping_pose()
 		
 	_check_suction_events()
@@ -138,11 +187,16 @@ func _check_suction_events() -> void:
 			print("TentacleWrapper: [SUCTION RELEASED] Point ", idx + 1, " released!")
 
 func _get_waypoints() -> Array[Vector3]:
-	# The tentacle path MUST start at its own physical root
-	var waypoints: Array[Vector3] = [global_position] 
+	var base_p: Vector3 = base_point.global_position if base_point else global_position
+	var waypoints: Array[Vector3] = [base_p] 
+	# Pull path waypoints back toward base position during release to simulate true path recoil
+	var recoil_factor: float = wrap_progress if target_progress < 0.5 else 1.0
+	
 	for pt in suction_points:
 		if is_instance_valid(pt):
-			waypoints.append(pt.global_position)
+			var target_p: Vector3 = pt.global_position
+			var recoiled_p: Vector3 = base_p.lerp(target_p, recoil_factor)
+			waypoints.append(recoiled_p)
 	return waypoints
 
 func _evaluate_suction_path(t: float, waypoints: Array[Vector3]) -> Vector3:
@@ -179,6 +233,10 @@ func _update_wrapping_pose() -> void:
 	var num_bones: int = bone_ids.size()
 	var ship_center: Vector3 = ship_node.global_position if is_instance_valid(ship_node) else waypoints[1]
 	var current_time = Time.get_ticks_msec() / 1000.0 # Used for wobble
+
+	var is_releasing: bool = (target_progress < 0.5)
+	var active_wobble_speed: float = wobble_speed * (pain_wobble_multiplier if is_releasing else 1.0)
+	var active_wobble_intensity: float = wobble_intensity * (1.8 if is_releasing else 1.0) + (_pain_impulse * pain_recoil_intensity)
 
 	for b_idx in range(num_bones):
 		var bone_id: int = bone_ids[b_idx]
@@ -225,17 +283,34 @@ func _update_wrapping_pose() -> void:
 		var skel_basis: Basis = skeleton.global_transform.basis.orthonormalized() 
 		var local_target_basis: Basis = skel_basis.inverse() * world_target_basis
 
-		# ORGANIC WOBBLE: Inject a sine wave into the rotation before applying
+		# ORGANIC WOBBLE & THRASH: Inject dynamic multi-axis sine waves
 		if enable_wobble:
-			var wobble = sin(current_time * wobble_speed + (b_idx * 0.5)) * wobble_intensity
-			# Gently twist the bone around its local Z and X axes
+			var phase_shift = b_idx * 0.4
+			var wobble = sin(current_time * active_wobble_speed + phase_shift) * active_wobble_intensity
+			var thrash_twist = cos(current_time * (active_wobble_speed * 1.3) + phase_shift) * (active_wobble_intensity * 0.6)
+			
 			local_target_basis = local_target_basis.rotated(local_target_basis.z, wobble)
-			local_target_basis = local_target_basis.rotated(local_target_basis.x, wobble * 0.5)
+			local_target_basis = local_target_basis.rotated(local_target_basis.x, thrash_twist)
+
+		# SELF-CURLING SPIRAL: When releasing, curl bones inward into a spiral as the path recoils back
+		if is_releasing:
+			var curl_amount: float = 1.0 - wrap_progress
+			var curl_angle_x: float = deg_to_rad(15.0 + t * 45.0) * curl_amount
+			var curl_angle_z: float = deg_to_rad(10.0 + t * 30.0) * curl_amount
+			local_target_basis = local_target_basis.rotated(local_target_basis.x, -curl_angle_x)
+			local_target_basis = local_target_basis.rotated(local_target_basis.z, curl_angle_z)
 
 		var wrap_bone_transform: Transform3D = Transform3D(local_target_basis, local_target_pos)
 
-		# SPACE FIX 2: Use global_rest so local spaces match perfectly
-		var current_rest: Transform3D = skeleton.get_bone_global_rest(bone_id)
-		var final_bone_transform: Transform3D = current_rest.interpolate_with(wrap_bone_transform, wrap_progress)
+		var final_bone_transform: Transform3D
+		if is_releasing:
+			# Maintain recoiling path transform with self-curl spiral
+			final_bone_transform = wrap_bone_transform
+		else:
+			var current_rest: Transform3D = skeleton.get_bone_global_rest(bone_id)
+			final_bone_transform = current_rest.interpolate_with(wrap_bone_transform, wrap_progress)
 
 		skeleton.set_bone_global_pose_override(bone_id, final_bone_transform, wrap_progress, true)
+		if b_idx < dynamic_colliders.size() and is_instance_valid(dynamic_colliders[b_idx]):
+			var bone_world_pos: Vector3 = skeleton.to_global(final_bone_transform.origin)
+			dynamic_colliders[b_idx].global_position = bone_world_pos

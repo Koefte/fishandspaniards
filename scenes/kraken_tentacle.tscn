@@ -1,9 +1,19 @@
 [gd_scene format=3 uid="uid://b8x3m4k2wap1a"]
 
-[ext_resource type="Script" path="res://scripts/tentacle_wrapper.gd" id="1_wrapper"]
-[ext_resource type="PackedScene" path="res://assets/kraken_tentacle.glb" id="2_model"]
+[ext_resource type="Script" uid="uid://b6qbylouyku0v" path="res://scripts/tentacle_wrapper.gd" id="1_wrapper"]
+[ext_resource type="PackedScene" uid="uid://bf38aa3rq34mv" path="res://assets/kraken_tentacle.glb" id="2_model"]
 
-[node name="KrakenTentacle" type="Node3D"]
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_lhcm0"]
+points = PackedVector3Array(0.097544365, 1.1404389, -3.7157028, -0.09257758, -1.1452382, -1.4308085, 0.097544365, -1.1452382, -1.4308085, -0.2831097, -0.19242835, -12.092852, -1.0452383, 0.56889844, 0.094044685, 1.05, 0.56889844, 0.094044685, 0.2880765, -0.19242835, -12.092852, -1.0452383, -0.57345533, 0.094044685, 1.05, -0.57345533, 0.094044685, 0.8594678, 1.1404389, -0.47747707, -0.2831097, 0.37838498, -11.140713, 0.2880765, 0.37838498, -11.140713, -0.47343674, 1.1404389, 0.094044685, -0.854501, 0.75941193, -3.7157028, 0.47840354, -1.1452382, 0.094044685, -0.47343674, -1.1452382, -0.66838217, 0.2880765, -0.57345533, -9.045531, 1.05, 0.18787149, -1.6205206, -1.0452383, -0.19242835, -1.6205206, -0.2831097, -0.3829418, -11.140713, 0.8594678, 0.75941193, -3.5247977, -0.09257758, 1.3309524, -0.66838217, -0.2831097, 0.75941193, -7.903681, 0.8594678, -0.7642112, -1.8114257, -0.47343674, 0.37838498, -9.998863, -0.854501, -0.7642112, -1.8114257, 0.47840354, -0.19242835, -9.998863, 0.2880765, 0.18787149, -12.092852, -0.47343674, -0.19242835, -9.998863, 0.2880765, 1.3309524, -0.28776503, -0.47343674, -1.1452382, 0.094044685, 0.8594678, 1.1404389, -0.8592868)
+
+[node name="KrakenTentacle" type="Node3D" unique_id=1687440051]
 script = ExtResource("1_wrapper")
 
-[node name="kraken_tentacle" parent="." instance=ExtResource("2_model")]
+[node name="kraken_tentacle" parent="." unique_id=1834970966 instance=ExtResource("2_model")]
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." unique_id=271742106]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" unique_id=1818866650]
+shape = SubResource("ConvexPolygonShape3D_lhcm0")
+
+[editable path="kraken_tentacle"]

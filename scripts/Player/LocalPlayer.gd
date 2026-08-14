@@ -11,17 +11,36 @@ enum Perspective { FIRST_PERSON, THIRD_PERSON }
 const FIRST_PERSON_CAM_POS: Vector3 = Vector3(0, 0.02, -0.22)
 const THIRD_PERSON_CAM_POS: Vector3 = Vector3(0, 0.4, 2.8)
 
+const HarpoonClass = preload("res://scripts/Player/Harpoon3D.gd")
+
+var harpoon: Node3D = null
+
+
 func _ready() -> void:
 	super._ready()
 	camera.current = true
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	_setup_harpoon()
 	_apply_perspective()
+
+func _setup_harpoon() -> void:
+	if has_node("Head/Harpoon"):
+		harpoon = get_node("Head/Harpoon")
+	elif camera_pivot:
+		var harpoon_scene = load("res://scenes/harpoon.tscn")
+		if harpoon_scene:
+			harpoon = harpoon_scene.instantiate()
+			camera_pivot.add_child(harpoon)
+
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		rotate_y(-event.relative.x * mouse_sensitivity)
 		camera_pivot.rotate_x(-event.relative.y * mouse_sensitivity)
 		camera_pivot.rotation.x = clamp(camera_pivot.rotation.x, deg_to_rad(-89), deg_to_rad(89))
+
+	if event.is_action_pressed("fire_harpoon") or (event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT and Input.mouse_mode == Input.MOUSE_MODE_CAPTURED):
+		shoot_harpoon()
 
 	if event is InputEventKey and event.pressed and not event.echo:
 		if event.keycode == KEY_F5:
@@ -32,6 +51,12 @@ func _unhandled_input(event: InputEvent) -> void:
 			Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 		else:
 			Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+
+func shoot_harpoon() -> void:
+	if harpoon:
+		var aim_xform = camera.global_transform if camera else camera_pivot.global_transform
+		harpoon.shoot(aim_xform)
+
 
 func toggle_perspective() -> void:
 	if current_perspective == Perspective.FIRST_PERSON:
