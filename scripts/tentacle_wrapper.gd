@@ -38,7 +38,7 @@ signal unwrapping_completed
 			debug_toggle_suction = false
 
 # Internal references
-@onready var skeleton: Skeleton3D = $Tentacle_Armature/Skeleton3D
+@onready var skeleton: Skeleton3D = (get_node_or_null("Tentacle_Armature/Skeleton3D") if has_node("Tentacle_Armature/Skeleton3D") else find_child("Skeleton3D", true, false)) as Skeleton3D
 var bone_ids: Array[int] = []
 var bone_names: Array[String] = []
 

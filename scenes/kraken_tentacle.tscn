@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://b8x3m4k2wap1a"]
+
+[ext_resource type="Script" path="res://scripts/tentacle_wrapper.gd" id="1_wrapper"]
+[ext_resource type="PackedScene" path="res://assets/kraken_tentacle.glb" id="2_model"]
+
+[node name="KrakenTentacle" type="Node3D"]
+script = ExtResource("1_wrapper")
+
+[node name="kraken_tentacle" parent="." instance=ExtResource("2_model")]
