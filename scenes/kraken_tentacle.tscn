@@ -1,9 +1,245 @@
 [gd_scene format=3 uid="uid://b8x3m4k2wap1a"]
 
-[ext_resource type="Script" path="res://scripts/tentacle_wrapper.gd" id="1_wrapper"]
-[ext_resource type="PackedScene" path="res://assets/kraken_tentacle.glb" id="2_model"]
+[ext_resource type="PackedScene" uid="uid://bf38aa3rq34mv" path="res://assets/kraken_tentacle.glb" id="2_model"]
 
-[node name="KrakenTentacle" type="Node3D"]
-script = ExtResource("1_wrapper")
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_Bone_000"]
+height = 1.0
 
-[node name="kraken_tentacle" parent="." instance=ExtResource("2_model")]
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_Bone_001"]
+height = 1.0
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_Bone_002"]
+height = 1.0
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_Bone_003"]
+height = 1.0
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_Bone_004"]
+height = 1.0
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_Bone_005"]
+height = 1.0
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_Bone_006"]
+radius = 0.482
+height = 1.0
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_Bone_007"]
+radius = 0.4373
+height = 1.0
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_Bone_008"]
+radius = 0.3927
+height = 1.0
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_Bone_009"]
+radius = 0.348
+height = 1.0
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_Bone_010"]
+radius = 0.3033
+height = 1.0
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_Bone_011"]
+radius = 0.2587
+height = 1.0
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_Bone_012"]
+radius = 0.214
+height = 1.0
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_Bone_013"]
+radius = 0.1693
+height = 1.0
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_Bone_014"]
+radius = 0.1247
+height = 1.0
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_Bone_015"]
+radius = 0.08
+height = 1.0
+
+[node name="KrakenTentacle" type="Node3D" unique_id=2089614051]
+
+[node name="kraken_tentacle" parent="." unique_id=1749258554 instance=ExtResource("2_model")]
+
+[node name="SplineIK3D" type="SplineIK3D" parent="kraken_tentacle/Tentacle_Armature/Skeleton3D" parent_id_path=PackedInt32Array(1749258554, 1727474938) index="1" unique_id=1311027390]
+
+[node name="BoneAttachment3D_000" type="BoneAttachment3D" parent="kraken_tentacle/Tentacle_Armature/Skeleton3D" parent_id_path=PackedInt32Array(1749258554, 1727474938) index="2" unique_id=327368498]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, 0)
+bone_name = "Bone_000"
+bone_idx = 0
+
+[node name="HurtboxArea" type="Area3D" parent="kraken_tentacle/Tentacle_Armature/Skeleton3D/BoneAttachment3D_000" unique_id=1008019880]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="kraken_tentacle/Tentacle_Armature/Skeleton3D/BoneAttachment3D_000/HurtboxArea" unique_id=791442072]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("CapsuleShape3D_Bone_000")
+
+[node name="BoneAttachment3D_001" type="BoneAttachment3D" parent="kraken_tentacle/Tentacle_Armature/Skeleton3D" parent_id_path=PackedInt32Array(1749258554, 1727474938) index="3" unique_id=270520337]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, -1)
+bone_name = "Bone_001"
+bone_idx = 1
+
+[node name="HurtboxArea" type="Area3D" parent="kraken_tentacle/Tentacle_Armature/Skeleton3D/BoneAttachment3D_001" unique_id=699812711]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="kraken_tentacle/Tentacle_Armature/Skeleton3D/BoneAttachment3D_001/HurtboxArea" unique_id=800912159]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("CapsuleShape3D_Bone_001")
+
+[node name="BoneAttachment3D_002" type="BoneAttachment3D" parent="kraken_tentacle/Tentacle_Armature/Skeleton3D" parent_id_path=PackedInt32Array(1749258554, 1727474938) index="4" unique_id=841976184]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, -2)
+bone_name = "Bone_002"
+bone_idx = 2
+
+[node name="HurtboxArea" type="Area3D" parent="kraken_tentacle/Tentacle_Armature/Skeleton3D/BoneAttachment3D_002" unique_id=1459067062]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="kraken_tentacle/Tentacle_Armature/Skeleton3D/BoneAttachment3D_002/HurtboxArea" unique_id=1748497910]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("CapsuleShape3D_Bone_002")
+
+[node name="BoneAttachment3D_003" type="BoneAttachment3D" parent="kraken_tentacle/Tentacle_Armature/Skeleton3D" parent_id_path=PackedInt32Array(1749258554, 1727474938) index="5" unique_id=74457354]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, -3)
+bone_name = "Bone_003"
+bone_idx = 3
+
+[node name="HurtboxArea" type="Area3D" parent="kraken_tentacle/Tentacle_Armature/Skeleton3D/BoneAttachment3D_003" unique_id=1398437800]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="kraken_tentacle/Tentacle_Armature/Skeleton3D/BoneAttachment3D_003/HurtboxArea" unique_id=582578545]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("CapsuleShape3D_Bone_003")
+
+[node name="BoneAttachment3D_004" type="BoneAttachment3D" parent="kraken_tentacle/Tentacle_Armature/Skeleton3D" parent_id_path=PackedInt32Array(1749258554, 1727474938) index="6" unique_id=899670461]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, -4)
+bone_name = "Bone_004"
+bone_idx = 4
+
+[node name="HurtboxArea" type="Area3D" parent="kraken_tentacle/Tentacle_Armature/Skeleton3D/BoneAttachment3D_004" unique_id=1134305577]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="kraken_tentacle/Tentacle_Armature/Skeleton3D/BoneAttachment3D_004/HurtboxArea" unique_id=1401085491]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("CapsuleShape3D_Bone_004")
+
+[node name="BoneAttachment3D_005" type="BoneAttachment3D" parent="kraken_tentacle/Tentacle_Armature/Skeleton3D" parent_id_path=PackedInt32Array(1749258554, 1727474938) index="7" unique_id=282003041]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, -5)
+bone_name = "Bone_005"
+bone_idx = 5
+
+[node name="HurtboxArea" type="Area3D" parent="kraken_tentacle/Tentacle_Armature/Skeleton3D/BoneAttachment3D_005" unique_id=1144408849]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="kraken_tentacle/Tentacle_Armature/Skeleton3D/BoneAttachment3D_005/HurtboxArea" unique_id=1164448895]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("CapsuleShape3D_Bone_005")
+
+[node name="BoneAttachment3D_006" type="BoneAttachment3D" parent="kraken_tentacle/Tentacle_Armature/Skeleton3D" parent_id_path=PackedInt32Array(1749258554, 1727474938) index="8" unique_id=1295545011]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, -6)
+bone_name = "Bone_006"
+bone_idx = 6
+
+[node name="HurtboxArea" type="Area3D" parent="kraken_tentacle/Tentacle_Armature/Skeleton3D/BoneAttachment3D_006" unique_id=2044991810]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="kraken_tentacle/Tentacle_Armature/Skeleton3D/BoneAttachment3D_006/HurtboxArea" unique_id=1313717973]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("CapsuleShape3D_Bone_006")
+
+[node name="BoneAttachment3D_007" type="BoneAttachment3D" parent="kraken_tentacle/Tentacle_Armature/Skeleton3D" parent_id_path=PackedInt32Array(1749258554, 1727474938) index="9" unique_id=201333717]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, -7)
+bone_name = "Bone_007"
+bone_idx = 7
+
+[node name="HurtboxArea" type="Area3D" parent="kraken_tentacle/Tentacle_Armature/Skeleton3D/BoneAttachment3D_007" unique_id=776243526]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="kraken_tentacle/Tentacle_Armature/Skeleton3D/BoneAttachment3D_007/HurtboxArea" unique_id=698464655]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("CapsuleShape3D_Bone_007")
+
+[node name="BoneAttachment3D_008" type="BoneAttachment3D" parent="kraken_tentacle/Tentacle_Armature/Skeleton3D" parent_id_path=PackedInt32Array(1749258554, 1727474938) index="10" unique_id=556024738]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, -8)
+bone_name = "Bone_008"
+bone_idx = 8
+
+[node name="HurtboxArea" type="Area3D" parent="kraken_tentacle/Tentacle_Armature/Skeleton3D/BoneAttachment3D_008" unique_id=2102734321]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="kraken_tentacle/Tentacle_Armature/Skeleton3D/BoneAttachment3D_008/HurtboxArea" unique_id=507688371]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("CapsuleShape3D_Bone_008")
+
+[node name="BoneAttachment3D_009" type="BoneAttachment3D" parent="kraken_tentacle/Tentacle_Armature/Skeleton3D" parent_id_path=PackedInt32Array(1749258554, 1727474938) index="11" unique_id=1915548387]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, -9)
+bone_name = "Bone_009"
+bone_idx = 9
+
+[node name="HurtboxArea" type="Area3D" parent="kraken_tentacle/Tentacle_Armature/Skeleton3D/BoneAttachment3D_009" unique_id=1864485891]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="kraken_tentacle/Tentacle_Armature/Skeleton3D/BoneAttachment3D_009/HurtboxArea" unique_id=1479658066]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("CapsuleShape3D_Bone_009")
+
+[node name="BoneAttachment3D_010" type="BoneAttachment3D" parent="kraken_tentacle/Tentacle_Armature/Skeleton3D" parent_id_path=PackedInt32Array(1749258554, 1727474938) index="12" unique_id=1562039568]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, -10)
+bone_name = "Bone_010"
+bone_idx = 10
+
+[node name="HurtboxArea" type="Area3D" parent="kraken_tentacle/Tentacle_Armature/Skeleton3D/BoneAttachment3D_010" unique_id=1777657599]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="kraken_tentacle/Tentacle_Armature/Skeleton3D/BoneAttachment3D_010/HurtboxArea" unique_id=1828019392]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("CapsuleShape3D_Bone_010")
+
+[node name="BoneAttachment3D_011" type="BoneAttachment3D" parent="kraken_tentacle/Tentacle_Armature/Skeleton3D" parent_id_path=PackedInt32Array(1749258554, 1727474938) index="13" unique_id=1648421927]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, -11)
+bone_name = "Bone_011"
+bone_idx = 11
+
+[node name="HurtboxArea" type="Area3D" parent="kraken_tentacle/Tentacle_Armature/Skeleton3D/BoneAttachment3D_011" unique_id=223563926]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="kraken_tentacle/Tentacle_Armature/Skeleton3D/BoneAttachment3D_011/HurtboxArea" unique_id=1727881320]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("CapsuleShape3D_Bone_011")
+
+[node name="BoneAttachment3D_012" type="BoneAttachment3D" parent="kraken_tentacle/Tentacle_Armature/Skeleton3D" parent_id_path=PackedInt32Array(1749258554, 1727474938) index="14" unique_id=51971073]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, -12)
+bone_name = "Bone_012"
+bone_idx = 12
+
+[node name="HurtboxArea" type="Area3D" parent="kraken_tentacle/Tentacle_Armature/Skeleton3D/BoneAttachment3D_012" unique_id=326551589]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="kraken_tentacle/Tentacle_Armature/Skeleton3D/BoneAttachment3D_012/HurtboxArea" unique_id=875696993]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("CapsuleShape3D_Bone_012")
+
+[node name="BoneAttachment3D_013" type="BoneAttachment3D" parent="kraken_tentacle/Tentacle_Armature/Skeleton3D" parent_id_path=PackedInt32Array(1749258554, 1727474938) index="15" unique_id=414216671]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, -13)
+bone_name = "Bone_013"
+bone_idx = 13
+
+[node name="HurtboxArea" type="Area3D" parent="kraken_tentacle/Tentacle_Armature/Skeleton3D/BoneAttachment3D_013" unique_id=1037448355]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="kraken_tentacle/Tentacle_Armature/Skeleton3D/BoneAttachment3D_013/HurtboxArea" unique_id=2034689074]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("CapsuleShape3D_Bone_013")
+
+[node name="BoneAttachment3D_014" type="BoneAttachment3D" parent="kraken_tentacle/Tentacle_Armature/Skeleton3D" parent_id_path=PackedInt32Array(1749258554, 1727474938) index="16" unique_id=48412639]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, -14)
+bone_name = "Bone_014"
+bone_idx = 14
+
+[node name="HurtboxArea" type="Area3D" parent="kraken_tentacle/Tentacle_Armature/Skeleton3D/BoneAttachment3D_014" unique_id=723026351]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="kraken_tentacle/Tentacle_Armature/Skeleton3D/BoneAttachment3D_014/HurtboxArea" unique_id=764446931]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("CapsuleShape3D_Bone_014")
+
+[node name="BoneAttachment3D_015" type="BoneAttachment3D" parent="kraken_tentacle/Tentacle_Armature/Skeleton3D" parent_id_path=PackedInt32Array(1749258554, 1727474938) index="17" unique_id=356031430]
+transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 0, -15)
+bone_name = "Bone_015"
+bone_idx = 15
+
+[node name="HurtboxArea" type="Area3D" parent="kraken_tentacle/Tentacle_Armature/Skeleton3D/BoneAttachment3D_015" unique_id=381665269]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="kraken_tentacle/Tentacle_Armature/Skeleton3D/BoneAttachment3D_015/HurtboxArea" unique_id=1503847457]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.5, 0)
+shape = SubResource("CapsuleShape3D_Bone_015")
+
+[editable path="kraken_tentacle"]
